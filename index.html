@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blueprint Bot · Pía · TuPlanSalud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Geist', system-ui, sans-serif; font-feature-settings: 'cv11', 'ss01'; }
+    .font-mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+    .serif-italic { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; }
+    html { scroll-behavior: smooth; }
+    .grain::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; opacity: 0.012; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .toc-link { transition: color 0.15s, border-color 0.15s; }
+    .toc-link:hover { color: rgb(255 255 255); border-left-color: rgb(139 92 246); }
+    .toc-link.sub { padding-left: 28px; font-size: 12px; }
+
+    .diagram-card { background: rgba(9, 9, 11, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 24px; padding: 32px; }
+    .diagram-card svg { display: block; max-width: 100%; height: auto; }
+    .action-card { background: rgba(9, 9, 11, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; position: relative; }
+    .action-card + .action-card { margin-top: 12px; }
+    .action-card .label { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: rgb(161 161 170); }
+    .action-card .value-strong { color: rgb(255 255 255); font-weight: 500; }
+    .action-card .value-mono { color: rgb(196 181 253); font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; }
+    .action-card .value-desc { color: rgb(212 212 216); font-size: 13px; line-height: 1.65; }
+    .action-grid { display: grid; grid-template-columns: 220px 1fr; gap: 14px 18px; align-items: start; }
+    @media (max-width: 768px) { .action-grid { grid-template-columns: 1fr; gap: 4px; } }
+
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-family: 'Geist Mono', ui-monospace, monospace; }
+    .pill-violet { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: rgb(196, 181, 253); }
+    .pill-amber { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: rgb(252, 211, 77); }
+    .pill-cyan { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); color: rgb(165, 243, 252); }
+    .pill-emerald { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: rgb(167, 243, 208); }
+    .pill-rose { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: rgb(253, 164, 175); }
+    .pill-blue { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: rgb(147, 197, 253); }
+    .pill-zinc { background: rgba(113, 113, 122, 0.15); border: 1px solid rgba(113, 113, 122, 0.3); color: rgb(212, 212, 216); }
+    .pill-red { background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: rgb(252, 165, 165); }
+
+    .prompt-block { background: rgba(15, 12, 28, 0.6); border: 1px solid rgba(139, 92, 246, 0.18); border-left: 3px solid rgba(139, 92, 246, 0.5); border-radius: 12px; padding: 18px 20px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; line-height: 1.65; color: rgb(228, 228, 231); white-space: pre-wrap; overflow-x: auto; }
+    .prompt-block.amber { border: 1px solid rgba(245, 158, 11, 0.2); border-left: 3px solid rgba(245, 158, 11, 0.5); background: rgba(28, 22, 12, 0.6); }
+    .prompt-wrap { position: relative; }
+    .prompt-wrap .prompt-block { padding-top: 42px; }
+    .copy-btn { position: absolute; top: 10px; right: 12px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.35); color: rgb(196, 181, 253); padding: 5px 10px; border-radius: 8px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s; opacity: 0.85; z-index: 2; }
+    .copy-btn:hover { opacity: 1; background: rgba(139, 92, 246, 0.28); }
+    .copy-btn.copied { background: rgba(16, 185, 129, 0.18); border-color: rgba(16, 185, 129, 0.5); color: rgb(167, 243, 208); opacity: 1; }
+    .copy-btn svg { width: 13px; height: 13px; }
+    @media print { .copy-btn { display: none; } }
+
+    details.wf-card { background: rgba(9, 9, 11, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; margin-bottom: 14px; overflow: hidden; transition: border-color 0.15s; }
+    details.wf-card[open] { border-color: rgba(139, 92, 246, 0.25); }
+    details.wf-card > summary { padding: 18px 22px; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    details.wf-card > summary::-webkit-details-marker { display: none; }
+    details.wf-card > summary::after { content: '+'; font-family: 'Geist Mono', monospace; color: rgb(139, 92, 246); font-size: 20px; flex-shrink: 0; line-height: 1; }
+    details.wf-card[open] > summary::after { content: '−'; }
+    details.wf-card > .wf-body { padding: 0 22px 22px 22px; border-top: 1px solid rgba(255, 255, 255, 0.04); padding-top: 18px; }
+
+    .step-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .step-table th { text-align: left; font-family: 'Geist Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: rgb(161 161 170); padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-weight: 500; }
+    .step-table td { padding: 12px 14px; vertical-align: top; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: rgb(212 212 216); line-height: 1.6; }
+    .step-table td:first-child { font-weight: 500; color: rgb(255, 255, 255); width: 220px; font-family: 'Geist', sans-serif; }
+    .step-table tr:last-child td { border-bottom: none; }
+    .step-table code { font-family: 'Geist Mono', monospace; font-size: 12px; background: rgba(139, 92, 246, 0.1); padding: 1px 6px; border-radius: 4px; color: rgb(196, 181, 253); }
+
+    .stage-card { flex-shrink: 0; width: 260px; border-radius: 14px; background: #0f0f0f; border: 1px solid rgba(255, 255, 255, 0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .stage-card .accent { height: 6px; }
+    .stage-card .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .stage-card .desc { font-size: 11px; color: rgb(212 212 216); line-height: 1.55; margin-top: auto; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.04); }
+
+    .role-card { background: rgba(9, 9, 11, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; height: 100%; display: flex; flex-direction: column; gap: 14px; }
+    .role-card h3 { font-size: 1.05rem; font-weight: 600; }
+    .role-card ul { font-size: 13px; line-height: 1.65; color: rgb(212 212 216); padding-left: 16px; }
+    .role-card ul li { margin-bottom: 6px; }
+    .role-card ul li::marker { color: rgb(139, 92, 246); }
+
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 14px 0; }
+    .faq-item summary { cursor: pointer; font-weight: 500; color: rgb(228 228 231); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .faq-item summary::after { content: '+'; color: rgb(139 92 246); font-family: 'Geist Mono', monospace; font-size: 18px; }
+    .faq-item[open] summary::after { content: '−'; }
+    .faq-item .ans { padding-top: 10px; color: rgb(161 161 170); font-size: 13px; line-height: 1.65; }
+
+    @media print { body { background: white; color: black; } .toc-link, aside { display: none; } details { break-inside: avoid; } }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-zinc-100 antialiased grain min-h-screen relative">
+
+<div class="fixed inset-0 pointer-events-none" style="background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.08), transparent 60%);"></div>
+
+<div class="relative max-w-[1400px] mx-auto flex">
+
+  <!-- TOC sidebar -->
+  <aside class="hidden lg:block w-60 shrink-0 sticky top-0 h-screen pt-20 px-6 overflow-y-auto bg-[#111114] border-r border-white/[0.06]">
+    <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-5">Blueprint · v1</p>
+    <nav class="space-y-0.5">
+      <a href="#hero" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">00 · Resumen</a>
+      <a href="#bot-resumen" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">01 · Bot Pía</a>
+      <a href="#flow" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">02 · Flow general</a>
+      <a href="#pipeline" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">03 · Pipeline 12 etapas</a>
+      <a href="#campos" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">04 · Custom Fields</a>
+      <a href="#tags-values" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">4.1 · Tags + Values</a>
+      <a href="#bot-config" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">05 · Configuración Pía</a>
+      <a href="#bot-personality" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">5.1 · Personality</a>
+      <a href="#bot-objective" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">5.2 · Objective</a>
+      <a href="#bot-info" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">5.3 · Additional Info</a>
+      <a href="#bot-actions" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">5.4 · Bot Actions</a>
+      <a href="#bot-stop" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">5.5 · Stop Triggers</a>
+      <a href="#kb" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">06 · Knowledge Base</a>
+      <a href="#kb-cbr" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">6.1 · Custom Bot Responses</a>
+      <a href="#kb-faqs" class="toc-link sub block py-1 px-3 text-zinc-400 border-l border-transparent">6.2 · FAQs operativas</a>
+      <a href="#workflows" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">07 · Workflows (25)</a>
+      <a href="#mensajes" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">08 · Mensajes SMS</a>
+      <a href="#objeciones" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">09 · Objeciones</a>
+      <a href="#metricas" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">10 · Métricas</a>
+      <a href="#tests" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">11 · Casos de prueba</a>
+      <a href="#roadmap" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">12 · Roadmap</a>
+      <a href="#riesgos" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">13 · Riesgos</a>
+      <a href="#next" class="toc-link block py-2 px-3 text-sm text-zinc-300 border-l border-transparent">14 · Próximos pasos</a>
+    </nav>
+
+    <div class="mt-10 pt-6 border-t border-white/[0.06]">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Cliente</p>
+      <p class="text-sm text-zinc-200">TuPlanSalud</p>
+      <p class="text-xs text-zinc-400">Daniel Gonzales</p>
+    </div>
+    <div class="mt-4">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Bot</p>
+      <p class="text-sm text-zinc-200">Pía · v1</p>
+      <p class="text-xs text-zinc-400">Asistente virtual</p>
+    </div>
+    <div class="mt-4">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Stack</p>
+      <p class="text-sm text-zinc-200">GHL · Conversation AI V2</p>
+      <p class="text-xs text-zinc-400">Uplevel WhatsApp · Meta Ads</p>
+    </div>
+    <div class="mt-4">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Implementación</p>
+      <p class="text-sm text-zinc-200">Andrés Linares</p>
+      <p class="text-xs text-zinc-400">AL Consulting</p>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 px-6 md:px-10 py-12 md:py-20 max-w-[1100px]">
+
+    <!-- ============================================================ -->
+    <!-- HERO                                                          -->
+    <!-- ============================================================ -->
+    <header id="hero" class="mb-20">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></div>
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400">Blueprint operativo · v1 · 12 may 2026</p>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05]">
+        Blueprint Bot Pía<br>
+        <span class="text-zinc-400">para TuPlanSalud</span>
+      </h1>
+      <p class="mt-6 text-lg text-zinc-300 max-w-2xl leading-relaxed serif-italic">
+        Asesoría de evaluación de cambio de ISAPRE en Chile. Bot filtro setter sobre Meta Ads + WhatsApp, con clasificación determinística en 4 preguntas y handoff inmediato a asesor humano para casos calificados o de complejidad clínica.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        <span class="pill pill-violet">Pipeline · 12 etapas</span>
+        <span class="pill pill-cyan">38 custom fields</span>
+        <span class="pill pill-cyan">5 custom values</span>
+        <span class="pill pill-violet">25 workflows</span>
+        <span class="pill pill-violet">4 bot actions</span>
+        <span class="pill pill-cyan">3 KBs · 80 FAQs</span>
+        <span class="pill pill-amber">9 Custom Bot Responses</span>
+        <span class="pill pill-emerald">Doble entrega · UI + AI Builder</span>
+        <span class="pill pill-blue">WhatsApp Uplevel · $39/mes</span>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- 01 · BOT RESUMEN                                              -->
+    <!-- ============================================================ -->
+    <section id="bot-resumen" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">01 · Bot Pía</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Qué hace, qué no hace, handoffs</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Pía es el filtro setter de primer contacto. Se identifica como asistente virtual de TuPlanSalud, hace máximo 4 preguntas, y deriva al asesor humano. No reemplaza al asesor — lo prepara.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <!-- Qué hace -->
+        <div class="role-card" style="border-color: rgba(16, 185, 129, 0.2);">
+          <div class="flex items-center gap-2">
+            <span class="pill pill-emerald">SÍ</span>
+            <h3 class="text-white">Qué hace Pía</h3>
+          </div>
+          <ul>
+            <li>Saluda y se presenta como asistente.</li>
+            <li>Hace 4 preguntas de clasificación: cotización 12m, renta, contrato, sistema actual.</li>
+            <li>Aplica regla determinística y escribe <code class="font-mono text-violet-300 text-xs">lead_categoria</code>.</li>
+            <li>Educa con respuestas cortas sobre GES, CAEC, Ricarte Soto, Urgencia.</li>
+            <li>Maneja 30 objeciones documentadas con cierre en CTA de agendamiento.</li>
+            <li>Detecta complejidad clínica y dispara handoff inmediato.</li>
+          </ul>
+        </div>
+
+        <!-- Qué NO hace -->
+        <div class="role-card" style="border-color: rgba(244, 63, 94, 0.2);">
+          <div class="flex items-center gap-2">
+            <span class="pill pill-rose">NO</span>
+            <h3 class="text-white">Qué NO hace Pía</h3>
+          </div>
+          <ul>
+            <li>No cotiza precios concretos.</li>
+            <li>No promete cobertura específica.</li>
+            <li>No procesa documentos ni firma electrónica.</li>
+            <li>No presenta Ley Ricarte Soto como beneficio del plan (es paralelo).</li>
+            <li>No agenda reuniones para leads No Calificados.</li>
+            <li>No habla en plural ("del equipo de") — habla como Pía en primera persona.</li>
+          </ul>
+        </div>
+
+        <!-- Handoffs -->
+        <div class="role-card" style="border-color: rgba(59, 130, 246, 0.2);">
+          <div class="flex items-center gap-2">
+            <span class="pill pill-blue">HANDOFF</span>
+            <h3 class="text-white">Handoffs a humano</h3>
+          </div>
+          <ul>
+            <li><strong>Calificación completa</strong> → alerta + tarea al asesor según categoría (Cal/Semi/NoCal).</li>
+            <li><strong>Complejidad clínica</strong> → handoff inmediato sin completar 4 preguntas (preexistencias, embarazo, cirugía, tratamiento, cargas médicas, clínica específica).</li>
+            <li><strong>Petición explícita</strong> del lead → handoff inmediato.</li>
+            <li>SLA Calificado: <span class="pill pill-rose">5 min</span></li>
+            <li>SLA Semi: <span class="pill pill-amber">15-30 min</span></li>
+            <li>SLA NoCal: <span class="pill pill-zinc">baja</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 02 · FLOW GENERAL                                             -->
+    <!-- ============================================================ -->
+    <section id="flow" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">02 · Flow general</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">De Meta Ads a Asesor Humano</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Captación → ingesta → clasificación → handoff. Cada flecha es un workflow GHL. Cada nodo es una etapa del pipeline o una acción del bot.
+      </p>
+
+      <div class="diagram-card">
+        <svg viewBox="0 0 1100 540" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#71717a"/>
+            </marker>
+            <marker id="arrV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/>
+            </marker>
+          </defs>
+
+          <!-- Captación -->
+          <g>
+            <rect x="20" y="30" width="200" height="80" rx="12" fill="#1c1917" stroke="#3b82f6" stroke-opacity="0.4"/>
+            <text x="120" y="58" text-anchor="middle" fill="#93c5fd" font-family="Geist Mono" font-size="10" letter-spacing="1">META ADS</text>
+            <text x="120" y="78" text-anchor="middle" fill="white" font-family="Geist" font-size="14" font-weight="500">Facebook + Instagram</text>
+            <text x="120" y="96" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">Click to WhatsApp + Form</text>
+          </g>
+
+          <!-- Ingesta WFs 1-4 -->
+          <g>
+            <rect x="280" y="30" width="200" height="80" rx="12" fill="#1c1917" stroke="#a78bfa" stroke-opacity="0.4"/>
+            <text x="380" y="58" text-anchor="middle" fill="#c4b5fd" font-family="Geist Mono" font-size="10" letter-spacing="1">WF-01 a WF-04</text>
+            <text x="380" y="78" text-anchor="middle" fill="white" font-family="Geist" font-size="14" font-weight="500">Lead entry</text>
+            <text x="380" y="96" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">Crea contacto + tags + opp</text>
+          </g>
+
+          <!-- WF-05 Bienvenida -->
+          <g>
+            <rect x="540" y="30" width="200" height="80" rx="12" fill="#1c1917" stroke="#a78bfa" stroke-opacity="0.4"/>
+            <text x="640" y="58" text-anchor="middle" fill="#c4b5fd" font-family="Geist Mono" font-size="10" letter-spacing="1">WF-05</text>
+            <text x="640" y="78" text-anchor="middle" fill="white" font-family="Geist" font-size="14" font-weight="500">Bienvenida Pía</text>
+            <text x="640" y="96" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">Dispara conversación bot</text>
+          </g>
+
+          <!-- WF-07 Asignación -->
+          <g>
+            <rect x="800" y="30" width="200" height="80" rx="12" fill="#1c1917" stroke="#06b6d4" stroke-opacity="0.4"/>
+            <text x="900" y="58" text-anchor="middle" fill="#67e8f9" font-family="Geist Mono" font-size="10" letter-spacing="1">WF-07</text>
+            <text x="900" y="78" text-anchor="middle" fill="white" font-family="Geist" font-size="14" font-weight="500">Asignación inmediata</text>
+            <text x="900" y="96" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">Lead → Daniel (asesor)</text>
+          </g>
+
+          <!-- Arrows top row -->
+          <path d="M 220 70 L 280 70" stroke="#71717a" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+          <path d="M 480 70 L 540 70" stroke="#71717a" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+          <path d="M 740 70 L 800 70" stroke="#71717a" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+          <!-- Bot Pía 4 preguntas -->
+          <g>
+            <rect x="380" y="180" width="340" height="120" rx="16" fill="#0f0a1f" stroke="#8b5cf6" stroke-opacity="0.6" stroke-width="1.5"/>
+            <text x="550" y="208" text-anchor="middle" fill="#c4b5fd" font-family="Geist Mono" font-size="10" letter-spacing="1">BOT PÍA · 4 PREGUNTAS</text>
+            <text x="550" y="232" text-anchor="middle" fill="white" font-family="Geist" font-size="14" font-weight="500">Diagnóstico clasificación</text>
+            <text x="400" y="258" fill="#d4d4d8" font-family="Geist" font-size="11">① cotización continua 12 meses</text>
+            <text x="400" y="274" fill="#d4d4d8" font-family="Geist" font-size="11">② renta mensual imponible</text>
+            <text x="400" y="290" fill="#d4d4d8" font-family="Geist" font-size="11">③ tipo de contrato</text>
+            <text x="565" y="258" fill="#d4d4d8" font-family="Geist" font-size="11">④ sistema actual de salud</text>
+            <text x="565" y="280" fill="#a78bfa" font-family="Geist Mono" font-size="10">Add Contact Info × 4</text>
+          </g>
+          <path d="M 640 110 L 640 175" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrV)"/>
+
+          <!-- Branch handoff clínico -->
+          <g>
+            <rect x="40" y="190" width="280" height="100" rx="12" fill="#1c1917" stroke="#fb7185" stroke-opacity="0.5" stroke-dasharray="4 2"/>
+            <text x="180" y="216" text-anchor="middle" fill="#fda4af" font-family="Geist Mono" font-size="10" letter-spacing="1">INTERRUPCIÓN</text>
+            <text x="180" y="236" text-anchor="middle" fill="white" font-family="Geist" font-size="13" font-weight="500">Detección complejidad clínica</text>
+            <text x="180" y="258" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">embarazo · preexistencia · cirugía</text>
+            <text x="180" y="274" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">tratamiento · cargas médicas</text>
+          </g>
+          <path d="M 380 240 L 320 240" stroke="#fb7185" stroke-width="1.5" fill="none" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+          <text x="350" y="232" fill="#fb7185" font-family="Geist Mono" font-size="9" text-anchor="middle">stop</text>
+
+          <!-- WF-06 Clasificación -->
+          <g>
+            <rect x="430" y="360" width="240" height="80" rx="12" fill="#1c1917" stroke="#a78bfa" stroke-opacity="0.6"/>
+            <text x="550" y="388" text-anchor="middle" fill="#c4b5fd" font-family="Geist Mono" font-size="10" letter-spacing="1">WF-06 CLASIFICACIÓN</text>
+            <text x="550" y="408" text-anchor="middle" fill="white" font-family="Geist" font-size="13" font-weight="500">Lógica determinística</text>
+            <text x="550" y="426" text-anchor="middle" fill="#a1a1aa" font-family="Geist" font-size="11">If/Else sobre 4 CFs</text>
+          </g>
+          <path d="M 550 300 L 550 355" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrV)"/>
+
+          <!-- 3 Branches output -->
+          <!-- Calificado -->
+          <g>
+            <rect x="40" y="470" width="280" height="60" rx="10" fill="#1c1917" stroke="#fb7185" stroke-opacity="0.5"/>
+            <text x="180" y="495" text-anchor="middle" fill="#fda4af" font-family="Geist Mono" font-size="10" letter-spacing="1">CALIFICADO · WF-08</text>
+            <text x="180" y="515" text-anchor="middle" fill="white" font-family="Geist" font-size="12">Stage 02 · SLA 5 min · Alerta roja</text>
+          </g>
+          <!-- Semi -->
+          <g>
+            <rect x="410" y="470" width="280" height="60" rx="10" fill="#1c1917" stroke="#fcd34d" stroke-opacity="0.5"/>
+            <text x="550" y="495" text-anchor="middle" fill="#fcd34d" font-family="Geist Mono" font-size="10" letter-spacing="1">SEMI · WF-09</text>
+            <text x="550" y="515" text-anchor="middle" fill="white" font-family="Geist" font-size="12">Stage 03 · SLA 15-30 min · Alerta naranja</text>
+          </g>
+          <!-- NoCal -->
+          <g>
+            <rect x="780" y="470" width="280" height="60" rx="10" fill="#1c1917" stroke="#71717a" stroke-opacity="0.5"/>
+            <text x="920" y="495" text-anchor="middle" fill="#a1a1aa" font-family="Geist Mono" font-size="10" letter-spacing="1">NO CALIFICADO · WF-10</text>
+            <text x="920" y="515" text-anchor="middle" fill="white" font-family="Geist" font-size="12">Stage 04 · Baja prioridad · Educar</text>
+          </g>
+          <!-- Arrows down -->
+          <path d="M 460 440 L 220 465" stroke="#fb7185" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+          <path d="M 550 440 L 550 465" stroke="#fcd34d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+          <path d="M 640 440 L 880 465" stroke="#71717a" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 03 · PIPELINE                                                 -->
+    <!-- ============================================================ -->
+    <section id="pipeline" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">03 · Pipeline</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Estructura del pipeline · 12 etapas</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        3 zonas funcionales: <span class="pill pill-violet">filtrado bot</span> (01, 04, 05, 09) · <span class="pill pill-blue">gestión humana</span> (02, 03, 06-08, 10) · <span class="pill pill-emerald">cierre</span> (11) y <span class="pill pill-zinc">perdida</span> (12).
+      </p>
+
+      <div class="rounded-3xl border border-white/[0.06] bg-zinc-950/40 p-6 md:p-8 mb-8">
+        <div class="flex items-center justify-between mb-5">
+          <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400">PIPELINE — 12 etapas</p>
+          <p class="font-mono text-[10px] text-zinc-500">scroll →</p>
+        </div>
+        <div class="overflow-x-auto pb-3 -mx-6 px-6 md:-mx-8 md:px-8">
+          <div class="flex gap-3 items-stretch min-w-max">
+
+            <div class="stage-card"><div class="accent bg-red-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">01</span><h3 class="text-base font-semibold text-white leading-snug">Nuevo Lead / Diagnóstico IA</h3><span class="self-start pill pill-violet">WF-05 activa Pía</span><span class="self-start pill pill-amber">⏰ inmediato</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_canal</span><span class="pill pill-cyan">lead_campana</span></div><div class="desc">Lead entra · bot saluda · 4 preguntas de clasificación.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-rose-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">02</span><h3 class="text-base font-semibold text-white leading-snug">Lead Calificado</h3><span class="self-start pill pill-rose">WF-08 alerta roja</span><span class="self-start pill pill-amber">⏰ 5 min</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_categoria</span></div><div class="desc">Cotiza 12m · renta ≥ $1.2M · indefinido · mayor edad.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-amber-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">03</span><h3 class="text-base font-semibold text-white leading-snug">Lead Semi Calificado</h3><span class="self-start pill pill-amber">WF-09 alerta naranja</span><span class="self-start pill pill-amber">⏰ 15-30 min</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_tipo_contrato</span></div><div class="desc">Cotiza 12m · renta ≥ $1.2M · contrato distinto a indefinido.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-zinc-500/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">04</span><h3 class="text-base font-semibold text-white leading-snug">Lead No Calificado</h3><span class="self-start pill pill-zinc">WF-10 baja prioridad</span><span class="self-start pill pill-zinc">⏰ baja</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_cotizacion_12m</span></div><div class="desc">No cotizó continuo · renta &lt; $1.2M · menor edad.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-cyan-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">05</span><h3 class="text-base font-semibold text-white leading-snug">Seguimiento IA · Recordatorio</h3><span class="self-start pill pill-violet">WF-14/15/16</span><span class="self-start pill pill-cyan">D1 · D3 · D7</span><div class="desc">Lead tibio · recordatorios escalados.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-blue-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">06</span><h3 class="text-base font-semibold text-white leading-snug">Lead Agendado</h3><span class="self-start pill pill-blue">WF-17 confirma + recordatorios</span><span class="self-start pill pill-amber">24h + 1h</span><div class="desc">Reunión de diagnóstico agendada con asesor.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-blue-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">07</span><h3 class="text-base font-semibold text-white leading-snug">Solicita Documentación</h3><span class="self-start pill pill-blue">WF-18 + recordatorio</span><span class="self-start pill pill-amber">24h + 72h</span><div class="desc">Post-reunión · pedir certificados, liquidaciones, plan actual.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-blue-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">08</span><h3 class="text-base font-semibold text-white leading-snug">Envío Propuesta</h3><span class="self-start pill pill-blue">WF-19 tracking</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_monto_propuesta_uf</span></div><div class="desc">Propuesta enviada · invita a reunión de cierre.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-cyan-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">09</span><h3 class="text-base font-semibold text-white leading-snug">Seguimiento IA · Cierre Propuesta</h3><span class="self-start pill pill-violet">WF-20/21/22</span><span class="self-start pill pill-cyan">D1 · D3 · D7</span><div class="desc">Sin respuesta a propuesta · seguimiento escalado.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-blue-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">10</span><h3 class="text-base font-semibold text-white leading-snug">Lead Agendado · Cierre</h3><span class="self-start pill pill-blue">WF-23</span><div class="desc">Reunión final para resolver dudas + decisión.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-emerald-400/80"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">11</span><h3 class="text-base font-semibold text-white leading-snug">Ganado</h3><span class="self-start pill pill-emerald">WF-24 onboarding</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_resultado_propuesta</span></div><div class="desc">Cliente acepta · iniciar afiliación.</div></div></div>
+
+            <div class="stage-card"><div class="accent bg-zinc-600"></div><div class="body"><span class="font-mono text-[10px] uppercase tracking-wider text-zinc-400">12</span><h3 class="text-base font-semibold text-white leading-snug">Perdido</h3><span class="self-start pill pill-zinc">WF-25 motivo</span><div class="flex flex-wrap gap-1"><span class="pill pill-cyan">lead_motivo_perdida</span></div><div class="desc">Rechazo · no avanza · motivo registrado.</div></div></div>
+
+          </div>
+        </div>
+      </div>
+
+      <p class="serif-italic text-zinc-400 text-sm max-w-3xl">
+        Las etapas 05 y 09 se ocultan del Funnel View (son etapas stand-by del bot). Display mode: <span class="pill pill-zinc">Background tint</span> recomendado.
+      </p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 04 · CUSTOM FIELDS                                            -->
+    <!-- ============================================================ -->
+    <section id="campos" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">04 · Custom Fields</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Esquema de datos · 38 fields</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Todos TEXT (memoria <code class="font-mono text-violet-300 text-xs">feedback_bot_custom_fields_text</code>) agrupados en 4 carpetas por dominio. Naming en snake_case ASCII para que el bot los referencie sin errores.
+      </p>
+
+      <div class="space-y-5">
+        <!-- lead_basicos -->
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-violet">lead_basicos</span><span class="pill pill-cyan">5 fields</span></div>
+          <table class="step-table">
+            <tr><td><code>lead_nombre</code></td><td>Nombre completo del lead</td></tr>
+            <tr><td><code>lead_telefono</code></td><td>Teléfono con código país (+56...)</td></tr>
+            <tr><td><code>lead_email</code></td><td>Email si disponible</td></tr>
+            <tr><td><code>lead_edad</code></td><td>Edad declarada</td></tr>
+            <tr><td><code>lead_mayor_edad</code></td><td>Sí / No</td></tr>
+          </table>
+        </div>
+
+        <!-- lead_origen -->
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-violet">lead_origen</span><span class="pill pill-cyan">11 fields</span></div>
+          <table class="step-table">
+            <tr><td><code>lead_fuente</code></td><td>"Meta Ads" / "Orgánico" / "Referido"</td></tr>
+            <tr><td><code>lead_canal</code></td><td>"WhatsApp" / "Formulario Meta"</td></tr>
+            <tr><td><code>lead_plataforma</code></td><td>"Facebook" / "Instagram"</td></tr>
+            <tr><td><code>lead_campana</code></td><td>Campaign name Meta</td></tr>
+            <tr><td><code>lead_conjunto_anuncios</code></td><td>Ad set name</td></tr>
+            <tr><td><code>lead_anuncio</code></td><td>Ad name</td></tr>
+            <tr><td><code>lead_utm_source / medium / campaign / content</code></td><td>UTMs (4 fields)</td></tr>
+            <tr><td><code>lead_fecha_ingreso</code></td><td>Timestamp ISO</td></tr>
+          </table>
+        </div>
+
+        <!-- lead_clasificacion -->
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-violet">lead_clasificacion</span><span class="pill pill-cyan">9 fields</span><span class="pill pill-amber">⚡ los escribe Pía</span></div>
+          <table class="step-table">
+            <tr><td><code>lead_sistema_actual</code></td><td>Fonasa / Isapre / Otro</td></tr>
+            <tr><td><code>lead_cotizacion_12m</code></td><td>Sí / No / No estoy seguro</td></tr>
+            <tr><td><code>lead_renta_aprox</code></td><td>5 rangos: < $800K → > $2.5M</td></tr>
+            <tr><td><code>lead_tramo_renta</code></td><td>Derivado (Bajo/Medio/Alto/Premium)</td></tr>
+            <tr><td><code>lead_tipo_contrato</code></td><td>Indefinido / Plazo fijo / Boleta / Independiente / Pensionado / Otro</td></tr>
+            <tr><td><code>lead_numero_cargas</code></td><td>Solo yo / Yo + 1 / Yo + 2 o más</td></tr>
+            <tr><td><code>lead_interes_principal</code></td><td>Pagar menos / Mejorar cobertura / Mejores clínicas / Cargas / Comparar / Orientación</td></tr>
+            <tr><td><code>lead_nivel_intencion</code></td><td>Alta / Media / Baja</td></tr>
+            <tr><td><code>lead_categoria</code></td><td><strong>Calificado / Semi Calificado / No Calificado</strong> ← lo escribe WF-06</td></tr>
+          </table>
+        </div>
+
+        <!-- lead_comercial -->
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-violet">lead_comercial</span><span class="pill pill-cyan">13 fields</span></div>
+          <table class="step-table">
+            <tr><td><code>lead_plan_actual</code></td><td>Plan actual ISAPRE si aplica</td></tr>
+            <tr><td><code>lead_monto_plan_uf</code></td><td>Valor actual en UF</td></tr>
+            <tr><td><code>lead_resumen_bot</code></td><td>Resumen conversación Pía</td></tr>
+            <tr><td><code>lead_estado_contacto</code></td><td>Contactado / No responde / Programado</td></tr>
+            <tr><td><code>lead_cantidad_llamados</code></td><td>Contador asesor</td></tr>
+            <tr><td><code>lead_fecha_reunion</code></td><td>Fecha reunión inicial</td></tr>
+            <tr><td><code>lead_fecha_doc_compromiso</code></td><td>Compromiso envío docs</td></tr>
+            <tr><td><code>lead_fecha_propuesta</code></td><td>Fecha envío propuesta</td></tr>
+            <tr><td><code>lead_clientes_propuesta</code></td><td>N° beneficiarios</td></tr>
+            <tr><td><code>lead_monto_propuesta_uf</code></td><td>UF totales propuesta</td></tr>
+            <tr><td><code>lead_resultado_propuesta</code></td><td>Aceptada / Pendiente / Rechazada</td></tr>
+            <tr><td><code>lead_motivo_perdida</code></td><td>9 motivos predefinidos</td></tr>
+            <tr><td><code>lead_ejecutivo_responsable</code></td><td>Nombre del asesor asignado</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== TAGS + CUSTOM VALUES ===== -->
+      <h3 id="tags-values" class="text-xl md:text-2xl font-medium mt-12 mb-4">4.1 · Tags + Custom Values</h3>
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-amber">5 Custom Values</span></div>
+          <p class="text-xs text-zinc-400 mb-3 serif-italic">Constantes a nivel subaccount, NO por contacto. Path: Settings → Custom Values.</p>
+          <table class="step-table">
+            <tr><td><code>correo_de_salida</code></td><td>Email sender en todo Send Email</td></tr>
+            <tr><td><code>link_calendario_diagnostico</code></td><td>Calendar reunión inicial</td></tr>
+            <tr><td><code>link_calendario_cierre</code></td><td>Calendar reunión cierre</td></tr>
+            <tr><td><code>nombre_asesor_humano</code></td><td>"Daniel Gonzales" (configurable)</td></tr>
+            <tr><td><code>telefono_asesor_humano</code></td><td>Para alertas críticas</td></tr>
+          </table>
+        </div>
+
+        <div class="action-card">
+          <div class="flex items-center gap-2 mb-3"><span class="pill pill-cyan">14 Tags</span></div>
+          <p class="text-xs text-zinc-400 mb-3 serif-italic">Operativos (drive movimiento) + reportería (por campaña).</p>
+          <div class="space-y-2">
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Operativos</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="pill pill-violet">Nuevo Lead</span>
+                <span class="pill pill-blue">Origen — Meta Ads</span>
+                <span class="pill pill-blue">Origen — IG</span>
+                <span class="pill pill-blue">Origen — FB</span>
+                <span class="pill pill-blue">Canal — WhatsApp</span>
+                <span class="pill pill-blue">Canal — Form</span>
+                <span class="pill pill-rose">Lead — Calificado</span>
+                <span class="pill pill-amber">Lead — Semi Cal</span>
+                <span class="pill pill-zinc">Lead — No Cal</span>
+                <span class="pill pill-emerald">Cliente — Ganado</span>
+                <span class="pill pill-zinc">Cliente — Perdido</span>
+              </div>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-1 mt-3">Reportería · campaña</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="pill pill-cyan">Revisar Plan</span>
+                <span class="pill pill-cyan">Mejorar Cobertura</span>
+                <span class="pill pill-cyan">Pagar Menos</span>
+                <span class="pill pill-cyan">Comparar Isapre</span>
+                <span class="pill pill-cyan">Fonasa→Isapre</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 05 · CONFIGURACIÓN PÍA                                        -->
+    <!-- ============================================================ -->
+    <section id="bot-config" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">05 · Configuración Pía</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Bot Goal V2 · paste-ready</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Path GHL: <code class="font-mono text-violet-300 text-xs">Conversation AI → Bot Goals → + Create New</code>. Cada bloque tiene botón Copy para pegar directo.
+      </p>
+
+      <h3 id="bot-personality" class="text-xl md:text-2xl font-medium mt-8 mb-3">5.1 · Personality Prompt</h3>
+      <div class="prompt-wrap">
+        <button class="copy-btn" onclick="copyPrompt(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span class="copy-text">Copiar</span>
+        </button>
+        <pre class="prompt-block">Eres Pía, asistente virtual de TuPlanSalud, una consultora chilena que ayuda a personas a evaluar si conviene cambiarse de Fonasa a ISAPRE, cambiar de plan dentro de ISAPRE, o mantenerse donde están.
+
+Tono: cercano, empático, profesional. Tuteas (Chile usa "tú" en marketing digital). Hablas como una persona real, NO como "el equipo de TuPlanSalud". Eres Pía en primera persona.
+
+Estilo:
+- Mensajes cortos (1-3 líneas), nunca párrafos largos.
+- Emojis usados con criterio: 👋 (saludo), 💙 (cierre cálido), 🙌 (ganado), 👍 (confirmación), 🤔 (curiosidad).
+- Usas modismos chilenos suaves: "súper" sí, "harto" sí, "po" NO (muy informal).
+- Nunca usas terminología técnica sin explicar. Cuando mencionas GES/CAEC/Ricarte Soto, das una frase de definición breve.
+- Cuando no sabes algo o el caso es complejo: "Mejor que esto lo revise un asesor contigo, ¿te derivo?"
+
+NUNCA prometes precios concretos ni coberturas específicas. NUNCA inventas datos de planes. Si te preguntan algo técnico que no está en tu base de conocimiento, derivas a asesor humano.</pre>
+      </div>
+
+      <h3 id="bot-objective" class="text-xl md:text-2xl font-medium mt-8 mb-3">5.2 · Objective Prompt</h3>
+      <div class="prompt-wrap">
+        <button class="copy-btn" onclick="copyPrompt(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span class="copy-text">Copiar</span>
+        </button>
+        <pre class="prompt-block">Tu objetivo es clasificar al lead en una de tres categorías (Calificado / Semi Calificado / No Calificado) haciendo MÁXIMO 4 preguntas, en este orden:
+
+1. ¿Has cotizado de manera continua durante los últimos 12 meses? (Sí / No)
+2. ¿Cuál es tu renta mensual imponible aproximada? (< $800K / $800K-$1.199K / $1.2M-$1.799K / $1.8M-$2.499K / > $2.5M)
+3. ¿Qué tipo de contrato o modalidad de trabajo tienes? (Indefinido / Plazo fijo / Boleta / Independiente / Pensionado / Otro)
+4. ¿Actualmente estás en Fonasa, Isapre u otro sistema? (Fonasa / Isapre / Otro)
+
+Después de cada respuesta del lead, ejecutas la Bot Action "Add Contact Info" para guardar el dato en el campo correspondiente.
+
+Cuando los 4 campos están completos, ejecutas "Trigger Workflow → WF-06 Clasificación" que mueve la oportunidad y dispara alerta al asesor.
+
+REGLAS DE INTERRUPCIÓN DEL DIAGNÓSTICO (handoff inmediato):
+- Si el lead menciona embarazo / búsqueda de embarazo / preexistencia / tratamiento médico en curso / cirugía próxima o reciente / problema de salud específico / cargas con problemas médicos / clínica preferida específica (UC, Las Condes, Indisa, MEDS, etc.) → STOP diagnóstico, ejecutar Human Handover con motivo "Complejidad clínica".
+- Si el lead pide explícitamente hablar con una persona → STOP, Human Handover motivo "Solicitud explícita".
+
+Después de clasificar (o al final del handoff), terminas con un mensaje de cierre cálido y le confirmas al lead que un asesor se pondrá en contacto.
+
+NO agendas reuniones tú misma — eso lo hace el asesor humano. Solo confirmas que será contactado.</pre>
+      </div>
+
+      <h3 id="bot-info" class="text-xl md:text-2xl font-medium mt-8 mb-3">5.3 · Additional Information</h3>
+      <div class="prompt-wrap">
+        <button class="copy-btn" onclick="copyPrompt(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span class="copy-text">Copiar</span>
+        </button>
+        <pre class="prompt-block">Datos críticos exactos (cuando el lead pregunte, responde con estos números — NO los aproximes):
+- Tope imponible 2025: 87.8 UF
+- Renta mínima imponible para postular a ISAPRE: $600.000
+- Copago máximo GES: 20% del arancel de referencia
+- Deducible CAEC: 30 veces la cotización pactada, mínimo 60 UF, máximo 126 UF
+- Cobertura Ley Ricarte Soto: 100% diagnóstico + tratamiento de alto costo
+- Adicional voluntario Fonasa→ISAPRE: hasta 18% del imponible
+- Adicional voluntario ISAPRE→ISAPRE: hasta 30% del imponible
+
+Reglas para responder objeciones:
+- Si el lead dice "solo estoy mirando" o "solo quiero comparar" → empatizas + ofreces evaluación sin compromiso + CTA agendamiento.
+- Si dice "va a salir más caro" → recordás que el plan se calcula con renta + cargas + cobertura, no es fijo.
+- Si dice "tengo preexistencias" o "estoy en tratamiento" → handoff inmediato, NO sigas con diagnóstico.
+- Si dice "no quiero que me vendan" → empatizás, aclarás que la evaluación es gratuita y sin compromiso.
+
+Datos de TuPlanSalud:
+- Servicio: asesoría comercial gratuita para evaluación de plan de salud (Chile).
+- No vende planes directos: orienta, compara, agenda con asesor certificado, acompaña afiliación.
+- Asesor humano: Daniel Gonzales (referenciable como "uno de nuestros asesores certificados").
+- Cobertura: nacional Chile. 100% remoto vía WhatsApp + videollamada.
+
+Si el lead pregunta:
+- "¿Cuánto cobran?" → "La evaluación inicial y comparación es gratuita y sin compromiso 💙"
+- "¿Trabajan con todas las ISAPRES?" → "Sí, podemos revisar alternativas en todas las ISAPRES disponibles"
+- "¿Tengo que ir presencial?" → "No, todo lo hacemos por WhatsApp y videollamada"</pre>
+      </div>
+
+      <h3 id="bot-actions" class="text-xl md:text-2xl font-medium mt-10 mb-3">5.4 · Bot Actions configuradas</h3>
+      <p class="text-zinc-400 mb-4 text-sm">4 ejecuciones de <code class="font-mono text-violet-300 text-xs">Add Contact Info</code> (una por pregunta) + 1 <code class="font-mono text-violet-300 text-xs">Trigger Workflow</code> + 1 <code class="font-mono text-violet-300 text-xs">Human Handover</code>.</p>
+
+      <div class="action-card">
+        <table class="step-table">
+          <thead><tr><th>Action</th><th>Campo (CF)</th><th>Qué actualizar</th><th>Ejemplo Salida</th></tr></thead>
+          <tr><td>Action 1.1 · Cotización</td><td><code>lead_cotizacion_12m</code></td><td>Respuesta del lead a cotización continua 12 meses</td><td>Sí · No · No estoy seguro</td></tr>
+          <tr><td>Action 1.2 · Renta</td><td><code>lead_renta_aprox</code></td><td>Rango renta mensual imponible declarada</td><td>$1.2M-$1.799K</td></tr>
+          <tr><td>Action 1.3 · Contrato</td><td><code>lead_tipo_contrato</code></td><td>Tipo de contrato o modalidad de trabajo</td><td>Indefinido · Boleta · Pensionado</td></tr>
+          <tr><td>Action 1.4 · Sistema</td><td><code>lead_sistema_actual</code></td><td>Sistema de salud actual del lead</td><td>Fonasa · Isapre · Otro</td></tr>
+          <tr><td>Action 2 · Trigger WF</td><td colspan="2">Dispara <code>WF-06 Clasificación</code> cuando los 4 fields están llenos</td><td>—</td></tr>
+          <tr><td>Action 3 · Human Handover</td><td colspan="2">Pre-built GHL: Human Requested · Lack of Info · Failed</td><td>—</td></tr>
+        </table>
+      </div>
+
+      <h3 id="bot-stop" class="text-xl md:text-2xl font-medium mt-10 mb-3">5.5 · Stop Triggers (detener bot)</h3>
+      <div class="action-card">
+        <table class="step-table">
+          <thead><tr><th>#</th><th>Trigger</th><th>Acción</th></tr></thead>
+          <tr><td>1</td><td>Tag agregado: <code>Lead — Calificado</code> o <code>Lead — Semi Calificado</code></td><td>Stop bot (asesor toma)</td></tr>
+          <tr><td>2</td><td>Tag agregado: <code>Cliente — Ganado</code> o <code>Cliente — Perdido</code></td><td>Stop bot</td></tr>
+          <tr><td>3</td><td>Tag agregado: <code>Manual — Asesor</code></td><td>Stop bot (override)</td></tr>
+          <tr><td>4</td><td>Mensaje del lead contiene "humano" / "persona" / "asesor" + verbo desear</td><td>Trigger Human Handover</td></tr>
+          <tr><td>5</td><td>Audio del lead recibido</td><td>Pause Bot 24h + alerta asesor (regla universal)</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 06 · KNOWLEDGE BASE                                           -->
+    <!-- ============================================================ -->
+    <section id="kb" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">06 · Knowledge Base</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">3 KBs · 80 FAQs · 9 Custom Bot Responses</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Carga 100% manual UI — GHL API V2 no expone CRUD para Knowledge Base. Datos numéricos críticos van como <strong>Custom Bot Responses</strong> hardcoded para evitar alucinación de cifras.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-4 mb-10">
+        <div class="action-card">
+          <span class="pill pill-violet mb-3">KB-1</span>
+          <h4 class="text-white font-medium mt-2">Sistema de salud Chile</h4>
+          <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Fonasa vs ISAPRE · Tarificación · 7% · Adicional · Excedentes · GES · CAEC · Ricarte Soto · Ley de Urgencia</p>
+          <p class="font-mono text-[10px] uppercase mt-3 text-zinc-500">~6 páginas · Rich Text</p>
+        </div>
+        <div class="action-card">
+          <span class="pill pill-violet mb-3">KB-2</span>
+          <h4 class="text-white font-medium mt-2">Beneficios + canales remotos</h4>
+          <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Vida Smart · Rescate · Kinesiología · Pharma 30% · Sucursal Virtual · App · WhatsApp · Contact Center</p>
+          <p class="font-mono text-[10px] uppercase mt-3 text-zinc-500">~2 páginas · Rich Text</p>
+        </div>
+        <div class="action-card">
+          <span class="pill pill-violet mb-3">KB-3</span>
+          <h4 class="text-white font-medium mt-2">FAQs operativas</h4>
+          <p class="text-xs text-zinc-400 mt-2 leading-relaxed">80 FAQs estructuradas en 12 categorías + 30 objeciones con respuestas persuasivas</p>
+          <p class="font-mono text-[10px] uppercase mt-3 text-zinc-500">~10 páginas · Rich Text</p>
+        </div>
+      </div>
+
+      <h3 id="kb-cbr" class="text-xl md:text-2xl font-medium mt-8 mb-3">6.1 · Custom Bot Responses (datos críticos hardcoded)</h3>
+      <p class="text-zinc-400 mb-4 text-sm">NO van en KB. Van como Custom Bot Responses para evitar que el RAG alucine cifras.</p>
+      <div class="action-card">
+        <table class="step-table">
+          <thead><tr><th>Trigger keywords</th><th>Respuesta hardcoded</th></tr></thead>
+          <tr><td>"tope imponible" · "87"</td><td>El tope imponible 2025 es <strong>87,8 UF</strong>.</td></tr>
+          <tr><td>"renta mínima" · "renta para ISAPRE"</td><td>La renta mínima imponible para postular a ISAPRE es <strong>$600.000</strong>.</td></tr>
+          <tr><td>"copago GES" · "20%"</td><td>El copago máximo GES es <strong>20% del arancel de referencia</strong>.</td></tr>
+          <tr><td>"deducible CAEC"</td><td>Equivale a <strong>30 veces tu cotización pactada</strong>, mínimo <strong>60 UF</strong>, máximo <strong>126 UF</strong>.</td></tr>
+          <tr><td>"Ricarte Soto cubre"</td><td>Cubre al <strong>100%</strong> diagnósticos y tratamientos de alto costo. Sistema paralelo, no se tramita por la ISAPRE.</td></tr>
+          <tr><td>"adicional Fonasa a ISAPRE"</td><td>Si te cambias desde Fonasa, el adicional máximo es <strong>18% del imponible</strong>.</td></tr>
+          <tr><td>"adicional ISAPRE a ISAPRE"</td><td>Si te cambias entre ISAPRES, el adicional puede llegar hasta <strong>30% del imponible</strong>.</td></tr>
+          <tr><td>"90 patologías"</td><td>GES garantiza <strong>90 patologías</strong> definidas por ley.</td></tr>
+          <tr><td>"horario atención"</td><td>Atendemos de <strong>8:00 a 21:00</strong>, hora Chile. Fuera de ese horario te contactaremos el día hábil siguiente.</td></tr>
+        </table>
+      </div>
+
+      <h3 id="kb-faqs" class="text-xl md:text-2xl font-medium mt-10 mb-3">6.2 · FAQs operativas — muestra</h3>
+      <p class="text-zinc-400 mb-4 text-sm">12 categorías · 80 FAQs en total (versión completa en <code class="font-mono text-violet-300 text-xs">SETUP/05-knowledge-base/tuplansalud.md</code>).</p>
+
+      <div class="action-card">
+        <details class="faq-item">
+          <summary>¿Me conviene cambiarme de ISAPRE?</summary>
+          <div class="ans">Depende de tu renta, tus cargas, tus clínicas preferidas y cuánto usas el plan. Podemos ayudarte a evaluarlo sin compromiso.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿La evaluación tiene costo?</summary>
+          <div class="ans">No, la evaluación inicial y comparación de alternativas no tiene costo.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cómo se calcula el valor del plan?</summary>
+          <div class="ans">Se calcula con precio base + edad y grupo familiar (factores de riesgo) + GES por beneficiario + beneficios complementarios contratados.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Qué son los excedentes?</summary>
+          <div class="ans">Es dinero a favor que se genera cuando tu cotización del 7% supera parte del costo pactado del plan. Pueden usarse en copagos, cesantía, prestaciones no cubiertas, cotizaciones adicionales, jubilación o préstamos.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Qué es CAEC y desde cuándo cubre?</summary>
+          <div class="ans">Es la Cobertura Adicional para Enfermedades Catastróficas. Cubre hospitalización de alto costo. No cubre desde el primer día: primero se cumple un deducible (30 × tu cotización, mínimo 60 UF, máximo 126 UF). Después puede quedar con copago $0 en la red CAEC para ese evento.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿La Ley Ricarte Soto aplica si estoy en ISAPRE?</summary>
+          <div class="ans">Sí, aplica para beneficiarios de ISAPRE. Cubre al 100% ciertos diagnósticos y tratamientos de alto costo definidos por ley. Es un sistema paralelo: no se tramita a través de la ISAPRE.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Tengo que ir presencial?</summary>
+          <div class="ans">No, todo lo hacemos por WhatsApp y videollamada. Cobertura nacional Chile, 100% remoto.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo cambiarme si tengo preexistencias?</summary>
+          <div class="ans">Se puede evaluar, pero depende de la revisión del caso. Voy a derivarte con un asesor para que lo veamos en detalle.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 07 · WORKFLOWS                                                -->
+    <!-- ============================================================ -->
+    <section id="workflows" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">07 · Workflows</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">25 workflows · doble entrega</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Cada workflow lleva instrucciones manuales UI (click-by-click) + prompt corrido optimizado para el Workflow AI Builder de GHL. Expandí cada card para ver detalle.
+      </p>
+
+      <details class="wf-card">
+        <summary>
+          <div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-01</span><span class="text-white font-medium">Lead entry Click to WhatsApp Facebook</span><span class="pill pill-violet">Pía</span><span class="pill pill-amber">⏰ inmediato</span></div>
+        </summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Facebook Lead Form Submitted · Filter: Page = TuPlanSalud · Form contains "CTWA"</p>
+          <table class="step-table mb-4">
+            <thead><tr><th>#</th><th>Acción</th><th>Config</th></tr></thead>
+            <tr><td>1</td><td>Create or Update Contact</td><td>mapear name, phone, email del payload Meta</td></tr>
+            <tr><td>2-8</td><td>Add Custom Field</td><td><code>lead_fuente</code>="Meta Ads", <code>lead_canal</code>="WhatsApp", <code>lead_plataforma</code>="Facebook", <code>lead_campana</code>, <code>lead_conjunto_anuncios</code>, <code>lead_anuncio</code>, <code>lead_fecha_ingreso</code></td></tr>
+            <tr><td>9-12</td><td>Add Tag</td><td><code>Nuevo Lead</code> · <code>Origen — Meta Ads</code> · <code>Origen — Facebook</code> · <code>Canal — WhatsApp</code></td></tr>
+            <tr><td>13</td><td>Add Opportunity</td><td>Pipeline=TuPlanSalud · Stage=01</td></tr>
+          </table>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Prompt AI Builder</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Crea un workflow llamado "WF-01 Lead entry CTWA Facebook" que se dispare cuando se reciba un Facebook Lead Form Submission desde una página que contenga "CTWA" en el nombre del formulario.
+
+Pasos del workflow en orden:
+
+1. Crea o actualiza el contacto con los datos del payload de Meta: nombre, teléfono y email.
+
+2. Aplica los siguientes valores a los custom fields del contacto: lead_fuente igual a "Meta Ads", lead_canal igual a "WhatsApp", lead_plataforma igual a "Facebook", lead_campana con el nombre de campaña del lead, lead_conjunto_anuncios con el nombre del ad set, lead_anuncio con el nombre del anuncio, y lead_fecha_ingreso con la fecha y hora actual.
+
+3. Agrega los tags: "Nuevo Lead", "Origen — Meta Ads", "Origen — Facebook", "Canal — WhatsApp".
+
+4. Crea una opportunity en el pipeline TuPlanSalud, en la etapa 01 Nuevo Lead / Diagnóstico IA. Vincula la oportunidad al contacto recién creado.
+
+5. No envíes mensajes desde este workflow. La bienvenida la dispara el workflow WF-05, que se gatilla al detectar el tag "Nuevo Lead".
+
+Nota crítica: no agregues delays ni acciones de mensajería. Este workflow es solo de ingesta. Asegúrate de que los nombres exactos de los custom fields coincidan con los definidos en GHL (todos en snake_case lowercase).</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-02</span><span class="text-white font-medium">Lead entry CTWA Instagram</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Idéntico a WF-01 cambiando: <code>lead_plataforma</code>="Instagram" + tag <code>Origen — Instagram</code>.</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-03</span><span class="text-white font-medium">Lead entry Formulario Meta corto</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Lead Form Submission · Form ID = corto (captura nombre + teléfono + email + sistema actual + rango renta).</p>
+          <p class="text-sm text-zinc-400 mb-3">Como ya viene con 2 de 4 datos de clasificación, Pía pregunta solo cotización 12m y tipo contrato.</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Crea workflow "WF-03 Lead entry Formulario Meta corto" disparado por Lead Form Submission con el form ID del formulario corto de TuPlanSalud.
+
+Pasos:
+1. Crea o actualiza contacto con nombre, teléfono y email.
+2. Aplica custom fields: lead_fuente="Meta Ads", lead_canal="Formulario Meta", lead_plataforma según platform del payload, lead_sistema_actual con respuesta a sistema, lead_renta_aprox con rango, lead_campana, lead_conjunto_anuncios, lead_anuncio.
+3. Agrega tags: "Nuevo Lead", "Origen — Meta Ads", "Canal — Formulario Meta", "Origen — Facebook" o "Origen — Instagram" según plataforma.
+4. Crea opportunity en pipeline TuPlanSalud, etapa 01.
+5. Pía en WF-05 reconocerá los 2 datos pre-llenados y solo pedirá las 2 preguntas restantes.
+
+No envíes mensajes desde este workflow.</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-04</span><span class="text-white font-medium">Lead entry Formulario Meta largo</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Form ID = largo. Captura los 4 datos de clasificación + cargas. Al final del workflow dispara <code>WF-06 Clasificación</code> directo (con delay 5s). Pía entra en modo confirmatorio.</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-05</span><span class="text-white font-medium">Bienvenida Pía + arranque diagnóstico</span><span class="pill pill-violet">Pía</span><span class="pill pill-amber">⏰ 30-60s</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Tag Added <code>Nuevo Lead</code></p>
+          <table class="step-table mb-4">
+            <tr><td>1</td><td>Wait 30 segundos (delay natural)</td></tr>
+            <tr><td>2</td><td>Send SMS bienvenida (texto canónico)</td></tr>
+            <tr><td>3</td><td>Wait 60 segundos</td></tr>
+            <tr><td>4</td><td>Bot Action · Trigger Pía</td></tr>
+            <tr><td>5</td><td>If/Else: Form Meta largo + 4 CFs llenos → modo confirmatorio · sino → 4 preguntas</td></tr>
+          </table>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Crea workflow "WF-05 Bienvenida Pía + arranque diagnóstico" disparado al agregarse tag "Nuevo Lead".
+
+Pasos:
+1. Espera 30 segundos (delay natural, no instantáneo).
+2. Envía SMS: "Hola [primer nombre] 👋 ¿cómo estás? Gracias por escribirnos desde nuestro anuncio. Soy Pía, asistente de TuPlanSalud 💙 Te voy a ayudar a revisar si tu plan de salud actual se ajusta a tu realidad o si podrías evaluar mejores alternativas. Para no hacerte perder tiempo, te haré solo 4 preguntas cortitas y con eso vemos si vale la pena que un asesor revise tu caso. ¿Partimos?"
+3. Espera 60 segundos.
+4. Dispara Bot Action "Trigger Bot Pía".
+5. Agrega condición If/Else: si contacto tiene tag "Canal — Formulario Meta" AND los 4 CFs de clasificación están llenos, Pía entra en modo confirmatorio breve. Sino, Pía inicia flujo de 4 preguntas estándar.
+
+Este workflow no escribe en custom fields. Solo dispara mensajes y entrega control al bot.</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card" open>
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-06</span><span class="text-white font-medium">Clasificación post-respuesta (CRÍTICO)</span><span class="pill pill-rose">CORE</span><span class="pill pill-amber">⚡ determinístico</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Custom Field Updated <code>lead_sistema_actual</code> (último campo que Pía completa)</p>
+          <p class="text-sm text-zinc-400 mb-3">Lógica If/Else pura — <strong>NO usar Workflow AI Assistant aquí</strong>.</p>
+          <div class="prompt-wrap mb-4">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Crea workflow "WF-06 Clasificación post-respuesta" disparado cuando se actualice lead_sistema_actual.
+
+Aplica lógica determinística If/Else (NO usar Workflow AI Assistant — son condiciones puras).
+
+Rama 1 — Calificado:
+Si lead_cotizacion_12m="Sí" AND lead_renta_aprox está en ["$1.2M-$1.799K", "$1.8M-$2.499K", "> $2.5M"] AND lead_mayor_edad="Sí" AND lead_tipo_contrato="Indefinido":
+- Set lead_categoria="Calificado".
+- Agrega tag "Lead — Calificado".
+- Mueve opportunity a stage 02 Lead Calificado.
+- Agrega tag "Intención — Alta".
+- Dispara WF-08 Alerta Calificado.
+
+Rama 2 — Semi Calificado:
+Si NO califica rama 1 pero lead_cotizacion_12m="Sí" AND renta en los 3 rangos altos AND lead_mayor_edad="Sí" AND lead_tipo_contrato en ["Plazo fijo","Boleta","Independiente","Pensionado","Otro"]:
+- Set lead_categoria="Semi Calificado".
+- Tag "Lead — Semi Calificado".
+- Mueve a stage 03.
+- Tag "Intención — Media".
+- Dispara WF-09.
+
+Rama 3 — No Calificado (default):
+Cualquier otro caso (cotización "No", renta baja, menor edad, o datos faltantes):
+- Set lead_categoria="No Calificado".
+- Tag "Lead — No Calificado".
+- Mueve a stage 04.
+- Tag "Intención — Baja".
+- Dispara WF-10.
+
+Las ramas son mutuamente excluyentes. Evalúa en orden: Calificado primero, Semi después, NoCal por defecto.</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-07</span><span class="text-white font-medium">Asignación inmediata al canal</span><span class="pill pill-cyan">Sistema</span><span class="pill pill-amber">⏰ inmediato</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Trigger: Tag Added <code>Origen — Meta Ads</code>. Asigna el contacto y la opportunity al asesor humano <strong>antes</strong> de calificar (memoria <code>feedback_asignacion_inmediata_canal</code>).</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-08</span><span class="text-white font-medium">Alerta interna Calificado · SLA 5min</span><span class="pill pill-rose">CRÍTICO</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Tag Added <code>Lead — Calificado</code></p>
+          <p class="text-sm text-zinc-300 mb-3">Envía SMS + Email + Push in-app al asesor + crea tarea con due 5 min.</p>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Email interno (template)</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">🔴 NUEVO LEAD CALIFICADO — ACCIÓN INMEDIATA
+Contactar dentro de los próximos 5 minutos.
+
+Nombre: {{contact.name}}
+Teléfono: {{contact.phone}}
+Email: {{contact.email}}
+Fuente: {{contact.lead_fuente}}
+Canal: {{contact.lead_canal}}
+Plataforma: {{contact.lead_plataforma}}
+Campaña: {{contact.lead_campana}}
+Anuncio: {{contact.lead_anuncio}}
+
+Sistema actual: {{contact.lead_sistema_actual}}
+Renta aproximada: {{contact.lead_renta_aprox}}
+Tipo de contrato: {{contact.lead_tipo_contrato}}
+Cotización últimos 12 meses: {{contact.lead_cotizacion_12m}}
+Cargas: {{contact.lead_numero_cargas}}
+
+Resumen conversación IA:
+{{contact.lead_resumen_bot}}
+
+Recomendación:
+Lead con alta intención. Priorizar contacto inmediato, generar confianza y agendar reunión de asesoría.
+
+Link al contacto: {{contact.url}}</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-09</span><span class="text-white font-medium">Alerta interna Semi Calificado · SLA 15-30 min</span><span class="pill pill-amber">Naranja</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Igual que WF-08 pero email + push (sin SMS), due 20 min, prioridad media. Asunto: <code>🟠 LEAD SEMI CALIFICADO — Contactar 15-30 min</code>.</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-10</span><span class="text-white font-medium">Alerta interna No Calificado · Baja prioridad</span><span class="pill pill-zinc">Amarillo</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Solo email interno al asesor. Sin tarea automática. Mover opportunity a stage 05 después de 30 min para que bot retome con WF-14/15/16.</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-11/12/13</span><span class="text-white font-medium">Seguimiento sin respuesta · 15min / 4h / 24h</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">3 escalones de seguimiento cuando lead no responde al diagnóstico.</p>
+          <table class="step-table">
+            <tr><td>WF-11 · 15 min</td><td>"Hola 👋 Te escribo solo para continuar con la revisión. Son preguntas muy cortitas y con eso podemos saber si vale la pena revisar alternativas para ti."</td></tr>
+            <tr><td>WF-12 · 4 h</td><td>"Quedo atenta por si quieres que sigamos con la revisión de tu plan. La idea es ayudarte a ver si estás pagando de más o si podrías acceder a una mejor cobertura."</td></tr>
+            <tr><td>WF-13 · 24 h</td><td>"Hola 👋 Te dejo este mensaje por si aún te interesa revisar tu plan de salud. Cuando quieras, seguimos desde donde quedamos." + <strong>Mueve a Stage 05</strong> + Tag Intención — Baja.</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-14/15/16</span><span class="text-white font-medium">Recordatorio Interés · D1 / D3 / D7</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">3 recordatorios escalados desde Stage 05.</p>
+          <table class="step-table">
+            <tr><td>D1</td><td>"Hola 👋 Quedamos a medio camino con la revisión de tu plan. ¿Te gustaría que lo retomemos hoy?"</td></tr>
+            <tr><td>D3</td><td>"Muchas personas descubren que su plan no está tan alineado con su realidad actual. Si quieres, podemos revisarlo sin compromiso."</td></tr>
+            <tr><td>D7</td><td>"Último mensaje por ahora 👋 Si aún quieres revisar tu plan de salud, responde 'Revisar' y retomamos tu caso." → Si responde "Revisar": vuelve a Stage 01.</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-17</span><span class="text-white font-medium">Lead Agendado · confirmación + recordatorios</span><span class="pill pill-blue">Humano</span><span class="pill pill-amber">⏰ 24h + 1h</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3"><strong>Trigger:</strong> Appointment Booked en Calendar Diagnóstico.</p>
+          <table class="step-table">
+            <tr><td>1</td><td>Move Opportunity → Stage 06</td></tr>
+            <tr><td>2</td><td>SMS confirmación inmediata con fecha + hora + link</td></tr>
+            <tr><td>3</td><td>SMS recordatorio 24h antes</td></tr>
+            <tr><td>4</td><td>SMS recordatorio 1h antes</td></tr>
+            <tr><td>5</td><td>Notificación interna a Daniel 24h antes</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-18</span><span class="text-white font-medium">Solicita Documentación + recordatorio</span><span class="pill pill-blue">Humano</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Trigger: stage = 07 (movido manual post-reunión). Envía SMS con lista de documentos (certificado AFP / liquidaciones / plan actual / cargas). Recordatorio 24h antes fecha comprometida + 72h si no envía.</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-19</span><span class="text-white font-medium">Envío Propuesta + tracking</span><span class="pill pill-blue">Humano</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">Trigger: stage = 08. Aplica tag <code>Propuesta — Enviada</code>, envía SMS al lead invitando a reunión de cierre + email con propuesta PDF + tarea interna seguimiento 3 días.</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Ya tenemos lista una propuesta para tu plan de salud 💙
+
+La idea es que puedas revisarla con calma, pero también que la conversemos juntos para explicarte coberturas, precio, red y próximos pasos.
+
+¿Te acomoda que agendemos una breve reunión para revisarla?
+
+{{custom_values.link_calendario_cierre}}</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-20/21/22</span><span class="text-white font-medium">Seguimiento Cierre Propuesta · D1 / D3 / D7</span><span class="pill pill-violet">Pía</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">3 escalones cuando lead no responde a la propuesta. WF-22 (D7) → si no responde en 72h adicionales → Stage 12 Perdido + motivo "No responde".</p>
+          <table class="step-table">
+            <tr><td>D1</td><td>"Hola 👋 Quería saber si pudiste revisar la propuesta de plan de salud que te enviamos..."</td></tr>
+            <tr><td>D3</td><td>"Te escribo para ayudarte a resolver cualquier duda sobre la propuesta..."</td></tr>
+            <tr><td>D7</td><td>"Último seguimiento por ahora 👋..." + tracking final.</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-23</span><span class="text-white font-medium">Lead Agendado · Cierre</span><span class="pill pill-blue">Humano</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300">Idéntico a WF-17 pero apuntando al Calendar Cierre. Mueve a stage 10. Mensaje: "Perfecto 👍 Dejamos agendada una reunión breve para revisar tu propuesta y resolver cualquier duda antes de avanzar."</p>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-24</span><span class="text-white font-medium">Ganado → Onboarding</span><span class="pill pill-emerald">Éxito</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">Trigger: stage = 11. Tag <code>Cliente — Ganado</code> + SMS agradecimiento al cliente + tarea interna onboarding + email celebratorio a Daniel.</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Excelente, muchas gracias por confiar en nosotros 🙌
+
+Ahora avanzaremos con los próximos pasos para dejar tu plan correctamente gestionado.
+
+Te iremos acompañando durante el proceso.</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="wf-card">
+        <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">WF-25</span><span class="text-white font-medium">Perdido + Motivo</span><span class="pill pill-zinc">Cierre</span></div></summary>
+        <div class="wf-body">
+          <p class="text-sm text-zinc-300 mb-3">Trigger: stage = 12. Requiere <code>lead_motivo_perdida</code> antes de cerrar. 9 motivos válidos.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill pill-zinc">Precio</span>
+            <span class="pill pill-zinc">No responde</span>
+            <span class="pill pill-zinc">No califica renta</span>
+            <span class="pill pill-zinc">No califica cotizaciones</span>
+            <span class="pill pill-zinc">Prefiere Fonasa</span>
+            <span class="pill pill-zinc">Prefiere ISAPRE actual</span>
+            <span class="pill pill-zinc">Falta documentación</span>
+            <span class="pill pill-zinc">Decisión postergada</span>
+            <span class="pill pill-zinc">Otro</span>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 08 · MENSAJES SMS                                             -->
+    <!-- ============================================================ -->
+    <section id="mensajes" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">08 · Mensajes SMS</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Plantillas listas para pegar</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Canal WhatsApp <strong>NO oficial</strong> (Uplevel) → merge tags directos <code class="font-mono text-violet-300 text-xs">{{contact.first_name}}</code>, no posicionales. Modelo flat <strong>$39 USD/mes</strong>, sin plantillas Meta.
+      </p>
+
+      <div class="space-y-6">
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Bienvenida · WF-05</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Hola {{contact.first_name}} 👋 ¿cómo estás? Gracias por escribirnos desde nuestro anuncio.
+
+Soy Pía, asistente de TuPlanSalud 💙
+
+Te voy a ayudar a revisar si tu plan de salud actual se ajusta a tu realidad o si podrías evaluar mejores alternativas.
+
+Para no hacerte perder tiempo, te haré solo 4 preguntas cortitas y con eso vemos si vale la pena que un asesor revise tu caso.
+
+¿Partimos?</pre>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Lead Agendado · confirmación WF-17</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Perfecto, dejamos agendada tu reunión para revisar tu plan de salud 👍
+
+Fecha: {{appointment.date}}
+Hora: {{appointment.time}}
+Link: {{appointment.meeting_link}}
+
+En la reunión revisaremos tu situación actual, alternativas disponibles y próximos pasos.</pre>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Recordatorio 24h antes</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Hola {{contact.first_name}} 👋 Te recuerdo que mañana tenemos agendada tu reunión para revisar tu plan de salud.
+
+Fecha: {{appointment.date}}
+Hora: {{appointment.time}}
+
+Te dejo el link:
+{{appointment.meeting_link}}</pre>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Solicita Documentación · WF-18</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Para poder revisar tu caso con mayor precisión, necesitamos que nos compartas algunos antecedentes.
+
+Documentos sugeridos:
+- Certificado de cotizaciones o remuneraciones.
+- Liquidaciones de sueldo, si aplica.
+- Información de tu plan actual, si estás en Isapre.
+- Datos de cargas, si quieres incluir beneficiarios.
+
+Con eso podemos preparar una recomendación más ajustada a tu realidad. Puedes enviarlos por este mismo WhatsApp.</pre>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Envío Propuesta · WF-19</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Ya tenemos lista una propuesta para tu plan de salud 💙
+
+La idea es que puedas revisarla con calma, pero también que la conversemos juntos para explicarte coberturas, precio, red y próximos pasos.
+
+¿Te acomoda que agendemos una breve reunión para revisarla?
+
+{{custom_values.link_calendario_cierre}}</pre>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Ganado · WF-24</p>
+          <div class="prompt-wrap">
+            <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="copy-text">Copiar</span></button>
+            <pre class="prompt-block">Excelente, muchas gracias por confiar en nosotros 🙌
+
+Ahora avanzaremos con los próximos pasos para dejar tu plan correctamente gestionado.
+
+Te iremos acompañando durante el proceso.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 09 · OBJECIONES                                               -->
+    <!-- ============================================================ -->
+    <section id="objeciones" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">09 · Objeciones</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">30 objeciones · 8 categorías</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Respuestas validadas con micro-CTA de agendamiento. Las 4 de salud y preexistencias <strong>disparan handoff inmediato</strong> a humano.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Baja urgencia</p>
+          <details class="faq-item"><summary>"Solo estoy mirando por ahora"</summary><div class="ans">Perfecto, de hecho este es el mejor momento para revisar con calma. La reunión no te obliga a cambiarte, solo te ayuda a entender si hoy existe una alternativa mejor. ¿Te agendo una evaluación breve?</div></details>
+          <details class="faq-item"><summary>"Todavía no quiero hablar con nadie"</summary><div class="ans">Lo entiendo. Muchas personas parten igual. Si quieres, te reservo una hora y así decides con más información.</div></details>
+          <details class="faq-item"><summary>"Solo quiero comparar"</summary><div class="ans">Perfecto, justamente para eso sirve la reunión: se revisa tu situación actual y se compara con alternativas reales, sin compromiso.</div></details>
+          <details class="faq-item"><summary>"Aún no estoy decidido"</summary><div class="ans">No necesitas estar decidido para agendar. La reunión es justamente para ayudarte a decidir con más seguridad.</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Tiempo</p>
+          <details class="faq-item"><summary>"No tengo tiempo"</summary><div class="ans">Lo entiendo. Por eso la reunión busca ser directa. En pocos minutos puedes saber si vale la pena avanzar o no.</div></details>
+          <details class="faq-item"><summary>"Muy ocupado esta semana"</summary><div class="ans">Sin problema. Podemos dejarla para el día y horario que te acomode mejor.</div></details>
+          <details class="faq-item"><summary>"Prefiero verlo más adelante"</summary><div class="ans">Claro, aunque muchas veces revisar antes ayuda a tomar una mejor decisión y evitar apuros después.</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Desconfianza</p>
+          <details class="faq-item"><summary>"No quiero que me vendan algo"</summary><div class="ans">Totalmente entendible. La idea no es presionarte, sino revisar si realmente te conviene cambiarte o incluso quedarte como estás.</div></details>
+          <details class="faq-item"><summary>"No quiero que me llamen mucho"</summary><div class="ans">Lo comprendo. La reunión es solo para orientarte mejor. Después tú decides cómo seguir.</div></details>
+          <details class="faq-item"><summary>"No confío en este tipo de asesorías"</summary><div class="ans">Es válido. Justamente por eso conviene revisar tu caso con números y cobertura real, no solo con promesas.</div></details>
+          <details class="faq-item"><summary>"Prefiero averiguarlo solo"</summary><div class="ans">También puedes hacerlo, pero normalmente una asesoría te ayuda a comparar más rápido y evitar errores en precio o cobertura.</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Precio</p>
+          <details class="faq-item"><summary>"Seguro me va a salir más caro"</summary><div class="ans">No necesariamente. Eso solo se puede saber bien cuando se revisa tu renta, tus cargas y el tipo de cobertura que necesitas.</div></details>
+          <details class="faq-item"><summary>"No quiero pagar más que mi 7%"</summary><div class="ans">Perfecto, eso se puede revisar. La reunión ayuda a ver si existe una alternativa dentro de tu rango o cercana a él.</div></details>
+          <details class="faq-item"><summary>"No tengo presupuesto para algo más caro"</summary><div class="ans">La idea no es llevarte a un plan más caro, sino buscar el mejor equilibrio entre precio y cobertura.</div></details>
+          <details class="faq-item"><summary>"No entiendo cómo se calcula el valor"</summary><div class="ans">Es súper común. En la reunión te lo explican de forma simple y aterrizada a tu caso.</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Miedo a equivocarse</p>
+          <details class="faq-item"><summary>"Me da miedo cambiarme y arrepentirme"</summary><div class="ans">Es una preocupación muy razonable. Justamente por eso conviene revisar todo antes: precio, cobertura, prestadores y beneficios.</div></details>
+          <details class="faq-item"><summary>"No quiero perder cobertura"</summary><div class="ans">Correcto, y ese es uno de los puntos más importantes a revisar antes de cualquier cambio.</div></details>
+          <details class="faq-item"><summary>"No quiero equivocarme con mi familia"</summary><div class="ans">Haces bien en tomarlo con cuidado. Cuando hay familia o cargas, lo mejor es revisar el caso de forma más precisa.</div></details>
+          <details class="faq-item"><summary>"Estoy bien como estoy"</summary><div class="ans">Puede ser, y también puede ser que exista una opción mejor y hoy no la estés viendo. ¿Hacemos una evaluación breve para salir de la duda?</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Complejidad</p>
+          <details class="faq-item"><summary>"No entiendo nada de GES y CAEC"</summary><div class="ans">Es normal. La gracia de la reunión es aterrizar todo eso a tu realidad y explicártelo simple.</div></details>
+          <details class="faq-item"><summary>"Esto se ve muy enredado"</summary><div class="ans">Sí, puede parecer complejo al principio. Por eso una reunión ayuda tanto.</div></details>
+          <details class="faq-item"><summary>"No sé qué plan debería comparar"</summary><div class="ans">No te preocupes, el asesor te ayuda a identificar qué alternativas vale la pena mirar según tu perfil.</div></details>
+        </div>
+
+        <div class="action-card" style="border-color: rgba(244, 63, 94, 0.3);">
+          <div class="flex items-center gap-2 mb-3">
+            <p class="font-mono text-[10px] uppercase tracking-wider text-rose-300">Salud · DISPARAN HANDOFF</p>
+            <span class="pill pill-rose">🚨</span>
+          </div>
+          <details class="faq-item"><summary>"Tengo preexistencias"</summary><div class="ans">Justamente por eso conviene revisar tu caso con más detalle antes de tomar cualquier decisión. Te derivo con un asesor ahora mismo.</div></details>
+          <details class="faq-item"><summary>"Estoy en tratamiento"</summary><div class="ans">Ese tipo de caso sí merece una revisión más precisa. Te conecto con un asesor.</div></details>
+          <details class="faq-item"><summary>"Estoy embarazada / buscando embarazo"</summary><div class="ans">Vale mucho la pena revisar bien tu situación antes de avanzar. Te derivo con una asesora ahora 💙</div></details>
+          <details class="faq-item"><summary>"Tengo una cirugía o atención importante pendiente"</summary><div class="ans">En ese caso lo mejor es no decidir a ciegas. Te conecto con un asesor para que lo veamos en detalle.</div></details>
+        </div>
+
+        <div class="action-card">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Datos y proceso</p>
+          <details class="faq-item"><summary>"No quiero entregar mis datos todavía"</summary><div class="ans">No hay problema. Puedes partir con una orientación general.</div></details>
+          <details class="faq-item"><summary>"No tengo todos mis documentos"</summary><div class="ans">No pasa nada. Primero se puede hacer una revisión general y luego ver qué información adicional necesitarías.</div></details>
+          <details class="faq-item"><summary>"No quiero firmar nada"</summary><div class="ans">Tranquilo, en esta etapa no se trata de firmar nada, sino de entender si realmente te conviene avanzar.</div></details>
+          <details class="faq-item"><summary>"Seguro el trámite es largo"</summary><div class="ans">Hoy gran parte del proceso puede revisarse de forma bastante simple, y la reunión te lo ordena.</div></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 10 · MÉTRICAS                                                 -->
+    <!-- ============================================================ -->
+    <section id="metricas" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">10 · Métricas</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Dashboard sugerido</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Configurar en GHL Reporting + opcional Looker Studio. Las métricas se agrupan en 3 capas del funnel.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="action-card">
+          <span class="pill pill-blue mb-3">Top of funnel</span>
+          <h4 class="text-white font-medium mt-2 mb-3">Volumen</h4>
+          <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+            <li>Leads nuevos / día</li>
+            <li>Leads por canal (WhatsApp vs Form)</li>
+            <li>Leads por plataforma (FB vs IG)</li>
+            <li>Leads por campaña (top 3)</li>
+            <li>Leads por anuncio (winners)</li>
+          </ul>
+        </div>
+        <div class="action-card">
+          <span class="pill pill-amber mb-3">Middle of funnel</span>
+          <h4 class="text-white font-medium mt-2 mb-3">Calidad · target</h4>
+          <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+            <li>Tasa respuesta bot · <span class="pill pill-emerald">&gt;70%</span></li>
+            <li>Tasa abandono diagnóstico · <span class="pill pill-emerald">&lt;30%</span></li>
+            <li>% Calificados / Semi / NoCal</li>
+            <li>Tasa contacto en SLA · <span class="pill pill-emerald">&gt;90%</span></li>
+            <li>Tiempo promedio contacto · <span class="pill pill-emerald">&lt;5 min</span></li>
+          </ul>
+        </div>
+        <div class="action-card">
+          <span class="pill pill-emerald mb-3">Bottom of funnel</span>
+          <h4 class="text-white font-medium mt-2 mb-3">Conversión</h4>
+          <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+            <li>Reuniones agendadas / realizadas</li>
+            <li>Tasa show · <span class="pill pill-emerald">&gt;75%</span></li>
+            <li>Propuestas enviadas · UF total</li>
+            <li>Tasa cierre · <span class="pill pill-emerald">&gt;25%</span></li>
+            <li>Top motivos pérdida (ranking)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 action-card">
+        <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Alertas críticas real-time</p>
+        <ul class="text-sm text-zinc-300 space-y-2">
+          <li>🚨 SLA Calificado &gt; 5 min sin contacto → push + SMS</li>
+          <li>🚨 Bot no responde &gt; 10 min en conversación activa → email Andrés (posible falla Uplevel)</li>
+          <li>🚨 Tasa NoCal &gt; 70% en 24h → email Daniel + Andrés (revisar filtros Meta)</li>
+          <li>🚨 Audio recibido del lead → push asesor</li>
+          <li>🚨 Lead pide hablar humano → push asesor (handoff inmediato)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 11 · CASOS DE PRUEBA                                          -->
+    <!-- ============================================================ -->
+    <section id="tests" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">11 · Casos de prueba</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">4 escenarios end-to-end</h2>
+      <p class="serif-italic text-zinc-300 mb-8 max-w-3xl">
+        Validar pre-launch con `/TEST-BOT-GHL` o manualmente desde Live Chat. El Caso D (handoff clínico) es <strong>bloqueante</strong>.
+      </p>
+
+      <div class="space-y-4">
+        <details class="wf-card" open>
+          <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">Caso A</span><span class="text-white font-medium">Happy Path Calificado</span><span class="pill pill-rose">CRÍTICO</span></div></summary>
+          <div class="wf-body">
+            <p class="text-sm text-zinc-300 mb-3"><strong>Perfil:</strong> María Pérez · cotiza continuo 12m / renta $1.8M / indefinido / Fonasa / mayor edad</p>
+            <p class="text-sm text-zinc-400 mb-3"><strong>Esperado:</strong> Pía completa 4 preguntas → WF-06 clasifica como Calificado → opportunity en Stage 02 → Daniel recibe SMS+email+push en menos de 30s.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="pill pill-emerald">✓ conversación ≤ 5 turnos</span>
+              <span class="pill pill-emerald">✓ 4 CFs llenos</span>
+              <span class="pill pill-emerald">✓ stage = 02</span>
+              <span class="pill pill-emerald">✓ alerta en &lt;30s</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="wf-card">
+          <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">Caso B</span><span class="text-white font-medium">Semi-Calificado (boleta-honorarios)</span><span class="pill pill-amber">Importante</span></div></summary>
+          <div class="wf-body">
+            <p class="text-sm text-zinc-300"><strong>Perfil:</strong> IG CTWA · cotiza continuo / renta $1.5M / boleta / ISAPRE / mayor edad → Stage 03, alerta naranja (email + push, sin SMS), tag Intención Media.</p>
+          </div>
+        </details>
+
+        <details class="wf-card">
+          <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">Caso C</span><span class="text-white font-medium">No Calificado (cotización irregular)</span><span class="pill pill-zinc">Importante</span></div></summary>
+          <div class="wf-body">
+            <p class="text-sm text-zinc-300"><strong>Perfil:</strong> FB CTWA · NO cotizó continuo / renta $2M / indefinido / Fonasa → Stage 04 → 30 min después Stage 05. Pía NO ofrece agendar. Mensaje educativo.</p>
+          </div>
+        </details>
+
+        <details class="wf-card" open>
+          <summary><div class="flex items-center gap-3 flex-wrap"><span class="font-mono text-xs text-zinc-500">Caso D</span><span class="text-white font-medium">Handoff por complejidad clínica</span><span class="pill pill-rose">BLOQUEANTE</span></div></summary>
+          <div class="wf-body">
+            <p class="text-sm text-zinc-300 mb-3"><strong>Perfil:</strong> FB CTWA. Lead dice en turno 2: <em>"Hola, estoy embarazada de 4 meses y quiero saber si me conviene cambiarme"</em></p>
+            <p class="text-sm text-zinc-400 mb-3"><strong>Esperado:</strong> Pía detecta keyword "embarazada", NO sigue con 4 preguntas, dispara Human Handover motivo "Complejidad clínica", tag <code>Manual — Asesor</code>, Stop Bot, alerta inmediata a Daniel.</p>
+            <p class="text-sm text-zinc-300"><strong>Pía responde:</strong> "Justamente por eso conviene revisar tu caso con más detalle. Te derivo con una asesora ahora mismo 💙"</p>
+            <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mt-4 mb-2">Variaciones a testear</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="pill pill-rose">"tengo cáncer en tratamiento"</span>
+              <span class="pill pill-rose">"acabo de salir de cirugía"</span>
+              <span class="pill pill-rose">"mi hijo tiene una preexistencia"</span>
+              <span class="pill pill-rose">"necesito atenderme en Las Condes"</span>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 12 · ROADMAP                                                  -->
+    <!-- ============================================================ -->
+    <section id="roadmap" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">12 · Roadmap</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">10 fases · 12 días estimados</h2>
+
+      <div class="action-card">
+        <table class="step-table">
+          <thead><tr><th>Fase</th><th>Días</th><th>Output</th></tr></thead>
+          <tr><td>1 · Conexión API GHL + Uplevel WhatsApp</td><td>1</td><td>PIT token validado · .env.local</td></tr>
+          <tr><td>2 · Pipeline 12 etapas</td><td>0.5</td><td>Pipeline creado en GHL</td></tr>
+          <tr><td>3 · Custom Fields + Custom Values + Tags</td><td>1</td><td>38 CFs + 5 values + 14 tags</td></tr>
+          <tr><td>4 · Calendarios diagnóstico + cierre</td><td>0.5</td><td>2 calendars configurados</td></tr>
+          <tr><td>5 · Bot Pía v1 (Bot Goal + 4 actions + stop triggers)</td><td>2</td><td>Bot deployado</td></tr>
+          <tr><td>6 · Knowledge Base (3 KBs carga manual)</td><td>1.5</td><td>3 KBs indexadas</td></tr>
+          <tr><td>7 · Workflows (25 con doble entrega)</td><td>3</td><td>Todos activos</td></tr>
+          <tr><td>8 · Mensajes SMS (templates + tono)</td><td>0.5</td><td>Mensajes validados</td></tr>
+          <tr><td>9 · Testing E2E (`/TEST-BOT-GHL`)</td><td>1</td><td>4 casos pasan</td></tr>
+          <tr><td>10 · Launch + monitoreo primeras 72h</td><td>1</td><td>Métricas baseline</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 13 · RIESGOS                                                  -->
+    <!-- ============================================================ -->
+    <section id="riesgos" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">13 · Riesgos</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Riesgos identificados + mitigación</h2>
+
+      <div class="action-card">
+        <table class="step-table">
+          <thead><tr><th>Riesgo</th><th>Mitigación</th></tr></thead>
+          <tr><td>R1 · Detección clínica falla por keyword débil → handoff no dispara</td><td>Smart Trigger con AI Action que evalúa intent, no solo regex</td></tr>
+          <tr><td>R2 · Lead miente en renta → asesor pierde tiempo validando</td><td>Validación documental en etapa 07 antes de propuesta</td></tr>
+          <tr><td>R3 · KB se desactualiza (cambia precio CAEC, GES) → bot responde data vieja</td><td>Daniel revisa trimestralmente · Custom Bot Responses para datos numéricos críticos</td></tr>
+          <tr><td>R4 · Uplevel cae → mensajes fallan silenciosamente</td><td>Alerta si &gt; 30 min sin actividad en bot</td></tr>
+          <tr><td>R5 · Lead duplicado por reentrada</td><td>Dedupe por teléfono + tag <code>lead_reactivado</code> si última conversación &gt; 90 días</td></tr>
+          <tr><td>R6 · Handoff clínico off-hours → lead colgado</td><td>Mensaje "te contactaremos al iniciar día hábil" + tag <code>lead_handoff_offhours</code></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 14 · PRÓXIMOS PASOS                                           -->
+    <!-- ============================================================ -->
+    <section id="next" class="mb-24 scroll-mt-12">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-400 mb-3">14 · Próximos pasos</p>
+      <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Checklist activación</h2>
+
+      <div class="action-card mb-6">
+        <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Daniel debe confirmar (8 decisiones pendientes)</p>
+        <ul class="text-sm text-zinc-300 space-y-2 list-disc list-inside">
+          <li>Email saliente del custom value <code>correo_de_salida</code></li>
+          <li>Link calendario diagnóstico y link calendario cierre</li>
+          <li>Nombre y teléfono del asesor humano (¿Daniel mismo o hay equipo?)</li>
+          <li>Número de WhatsApp que se conecta a GHL via Uplevel</li>
+          <li>Clínica preferida default (si aplica) para responder preguntas</li>
+          <li>Confirma tono "tú" (default sugerido) vs "usted"</li>
+          <li>Horario de operación del asesor humano (default 8:00-21:00 Chile)</li>
+          <li>Pricing del servicio (¿gratis para el lead? ¿comisión sobre la ISAPRE?)</li>
+        </ul>
+      </div>
+
+      <div class="action-card mb-6">
+        <p class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-3">Andrés ejecuta (en orden)</p>
+        <ul class="text-sm text-zinc-300 space-y-2 list-disc list-inside">
+          <li>Fase 1: conexión PIT GHL + Uplevel WhatsApp</li>
+          <li>Fases 2-3 en paralelo: pipeline + custom fields</li>
+          <li>Daniel valida prompts del bot Pía antes de Fase 5</li>
+          <li>Fases 4-7 secuencialmente</li>
+          <li>Daniel + Andrés: testing E2E con <code>/TEST-BOT-GHL</code></li>
+          <li>Launch suave con tráfico controlado primeras 72h</li>
+          <li>Iteración v2 del bot con learnings reales</li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-12 py-8 border-t border-white/[0.06]">
+        <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2">Blueprint generado · v1 · 12 may 2026</p>
+        <p class="text-zinc-300 serif-italic">Implementación por <strong>Andrés Linares</strong> · AL Consulting</p>
+        <p class="text-zinc-500 text-sm mt-2">Para iteraciones, leer DATA-CONSOLIDADA.md y SETUP/ en este mismo proyecto.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function copyPrompt(btn) {
+    const block = btn.parentElement.querySelector('.prompt-block');
+    const text = block.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      const span = btn.querySelector('.copy-text');
+      const original = span.textContent;
+      span.textContent = 'Copiado';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        span.textContent = original;
+      }, 1500);
+    }).catch(err => {
+      console.error('Error copying:', err);
+    });
+  }
+</script>
+
+</body>
+</html>
